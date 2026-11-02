@@ -72,3 +72,26 @@ Prometheus scraping must be configured separately.
 3. Caffeine eviction removes bucket state. If a bucket is evicted, that client can receive a fresh bucket before its normal refill period. Choose the maximum cache size based on expected client cardinality.
 4. Eureka registration alone is not a complete health guarantee. Test instance failure and recovery.
 5. This project does not validate JWTs. Your existing authentication service remains separate; secure the gateway and downstream services according to your existing authentication design.
+
+## Test API
+
+1..150 | ForEach-Object {
+try {
+$response = Invoke-WebRequest `
+            -Uri "http://localhost:8080/api/posts" `
+-Method GET `
+-ErrorAction Stop
+
+        $statusCode = [int]$response.StatusCode
+    }
+    catch {
+        if ($_.Exception.Response) {
+            $statusCode = [int]$_.Exception.Response.StatusCode
+        }
+        else {
+            $statusCode = "ERROR"
+        }
+    }
+
+    Write-Host "Request $_ : $statusCode"
+}                                                                                                              >>     try {                                                                                                            >>         $response = Invoke-WebRequest `                                                                              >>             -Uri "http://localhost:8080/api/posts" `                                                                 >>             -Method GET `                                                                                            >>             -ErrorAction Stop                                                                                        >>                                                                                                                      >>         $statusCode = [int]$response.StatusCode                                                                      >>     }                                                                                                                >>     catch {                                                                                                          >>         if ($_.Exception.Response) {                                                                                 >>             $statusCode = [int]$_.Exception.Response.StatusCode                                                      >>         }                                                                                                            >>         else {                                                                                                       >>             $statusCode = "ERROR"                                                                                    >>         }                                                                                                            >>     }                                                                                                                >>                                                                                                                      >>     Write-Host "Request $_ : $statusCode"                                                                            >> }  
