@@ -1,0 +1,63 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            # Existing User Service
+            - id: user-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/user-registration/**
+
+            # JSONPlaceholder
+            - id: jsonplaceholder
+              uri: https://jsonplaceholder.typicode.com
+              predicates:
+                - Path=/api/posts,/api/posts/**,/api/users,/api/users/**
+              filters:
+                - StripPrefix=1
+
+            # HTTPBin
+            - id: httpbin
+              uri: https://httpbin.org
+              predicates:
+                - Path=/api/httpbin/**
+              filters:
+                - StripPrefix=2
+
+gateway:
+  rate-limit:
+    capacity: 100
+    refill-tokens: 100 # for testing change to 1
+    refill-duration-seconds: 60
+    idle-ttl-minutes: 30
+    maximum-clients: 100000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always
+
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+
+#  instance:
+#    prefer-ip-address: true
+
